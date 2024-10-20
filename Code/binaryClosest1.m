@@ -10,7 +10,6 @@ function [v, infim] = binaryClosest1(arr, val)
     % val : scalar in R
     
     if (~issorted(arr))
-        arrPrint(arr);
         error('The array is not sorted');
     end
     
