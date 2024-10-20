@@ -21,17 +21,17 @@ function z=f(u,v)
     end
 end
 F=@f;
-Z=arrayfun(F,X,Y);
+% Z=arrayfun(F,X,Y);
 % Z=X.^2+Y.^2;
-% Z=peaks(X,Y);
-numberOfLevels=150;
+Z=peaks(X,Y);
+numberOfLevels=100;
 C= contourc(x,y,Z,numberOfLevels);
 FG=figure('Name','Schwarz Rearrangement','NumberTitle','off');
 FG.Position= [350 150 900 450];
 tiledlayout(1,2);
 nexttile;
 S1=surf(X,Y,Z,'EdgeAlpha','.3');
-T=contourMultiLines(C,gridCoordinates);
+T=contourLines(C,gridCoordinates);
 T.updateAreas;
 function Sch = genSchwarz(x,y,T)
     Sch = NaN;
