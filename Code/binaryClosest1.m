@@ -37,3 +37,5 @@ function [v, infim] = binaryClosest1(arr, val)
     v = arr(infim);
     end
     
+
+%  Benjamin Bernard (2024). Binary search for closest value in an array (https://www.mathworks.com/matlabcentral/fileexchange/37915-binary-search-for-closest-value-in-an-array), MATLAB Central File Exchange. Recuperato ottobre 21, 2024. 
