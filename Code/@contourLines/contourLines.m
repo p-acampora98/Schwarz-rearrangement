@@ -15,7 +15,7 @@ classdef contourLines < handle
         function obj = contourLines (fun, gridCoordinates,numberOfCells,numberOfLevels)
             switch nargin
                 case 1
-                    gridCoordinates = [0 1 0 1];
+                    gridCoordinates = [];
                     numberOfCells = [];
                     numberOfLevels = [];
                 case 2
@@ -26,6 +26,9 @@ classdef contourLines < handle
                 case 4
                 otherwise
                     errore('At least one argument and no more than four.')
+            end
+            if isempty(gridCoordinates)
+                gridCoordinates=[-1 1 -1 1];
             end
             if isempty(numberOfLevels)
                 numberOfLevels = 100;
@@ -185,20 +188,25 @@ classdef contourLines < handle
         end
 
         function Sch = Schwarz(obj, x,y,obj2)
-            arguments
-                obj
-                x {mustBeNumeric}
-                y {mustBeNumeric}
-                obj2 {mustBeA(obj2,'contourLines')} 
-            end
+            % arguments
+            %     obj
+            %     x {mustBeNumeric}
+            %     y {mustBeNumeric}
+            %     obj2 {mustBeA(obj2,'contourLines')} 
+            % end
             switch nargin
                 case 3
                     obj2=[];
                 case 4
+                    if ~isa(obj2, 'contourLines')
+                        error('The input must be a contourLines object')
+                    end
                 otherwise
                     error('At least two arguments and no more than 3')
             end
-            
+            if ~isnumeric(x) || ~isnumeric(y)
+                error('x and y must be numeric')
+            end
 
             Sch = NaN;
             if isempty(obj2)
