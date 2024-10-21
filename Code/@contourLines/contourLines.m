@@ -1,6 +1,7 @@
 % This class is used to compute distribution function and radially decreasing rearrangement.
 classdef contourLines < handle
     properties
+        funHandle %{mustBeA(funHandle,'function_handle')}
         matrix(2,:) {mustBeNumeric} % This is the contour matrix M that MATLAB gives with M=contour(-,-)
         numberOfLines {mustBeNumeric} % How many lines are stored (more lines could be part of one contour)
         numberOfLevels {mustBeNumeric} % How many levels (contours) are stored
@@ -15,18 +16,25 @@ classdef contourLines < handle
             switch nargin
                 case 1
                     gridCoordinates = [0 1 0 1];
-                    numberOfCells = 20;
-                    numberOfLevels = 100;
+                    numberOfCells = [];
+                    numberOfLevels = [];
                 case 2
-                    numberOfCells = 20;
-                    numberOfLevels = 100;
+                    numberOfCells = [];
+                    numberOfLevels = [];
                 case 3
-                    numberOfLevels =100;
+                    numberOfLevels =[];
                 case 4
                 otherwise
                     errore('At least one argument and no more than four.')
             end
-            % Initialize to -inf the values of the contour on the external domain (square)
+            if isempty(numberOfLevels)
+                numberOfLevels = 100;
+            end
+            if isempty(numberOfCells)
+                numberOfCells = 20;
+            end
+            obj.funHandle = fun;
+            % Define the coordinates of the grid
             x1=gridCoordinates(1);
             x2=gridCoordinates(2);
             y1=gridCoordinates(3);
@@ -41,7 +49,7 @@ classdef contourLines < handle
             % Save contour matrix
             xx=linspace(x1,x2,numberOfCells);
             yy=linspace(y1,y2,numberOfCells);
-            [X Y]=meshgrid(xx,yy);
+            [X, Y]=meshgrid(xx,yy);
             Z=arrayfun(@newfun,X,Y);
             mat = contourc(xx,yy,Z,numberOfLevels);
             % Compute number of different level sets contained in contourMatrix
@@ -57,7 +65,7 @@ classdef contourLines < handle
             obj.index=zeros(2,number+1);
             obj.updateLevels;    
             obj.numberOfLevels=obj.index(1,number);  
-            obj.areas=zeros(1,obj.numberOfLevels);
+            obj.updateAreas;
             obj.squareDomain=gridCoordinates;
         end
 
@@ -174,6 +182,35 @@ classdef contourLines < handle
             y = [grd(3), grd(3), grd(4), grd(4), NaN, y, NaN, grd(3), grd(3), grd(4), grd(4)];
             P=polyshape([x', y']);
             plot(P);
+        end
+
+        function Sch = Schwarz(obj, x,y,obj2)
+            arguments
+                obj
+                x {mustBeNumeric}
+                y {mustBeNumeric}
+                obj2 {mustBeA(obj2,'contourLines')} 
+            end
+            switch nargin
+                case 3
+                    obj2=[];
+                case 4
+                otherwise
+                    error('At least two arguments and no more than 3')
+            end
+            
+
+            Sch = NaN;
+            if isempty(obj2)
+                z=pi*(x^2+y^2);
+            else
+                z=obj2.distributionFunction(obj2.funHandle(x,y));
+            end
+            dom = obj.squareDomain;
+            domainVolume = (dom(2)-dom(1))*(dom(4)-dom(3));
+            if  (z<domainVolume)
+                Sch=obj.radDecrRearr(z);
+            end
         end
     end
 end

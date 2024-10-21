@@ -1,60 +1,59 @@
 clc
 clear
 
+% Parameters
+nLevels = 100;
+nCells = 100;
+
+% Functions
+F1 = @peaks; % To be reordered
+F2 = @squareTest; % Giving the levels to reorder
+
+
+% General square domain 
 x1=-2;
 x2=2;
 y1=-2;
 y2=2;
 gridCoordinates = [x1, x2, y1, y2];
-x=linspace(x1,x2,100);
-y=linspace(y1,y2,100);
-
+x=linspace(x1,x2,nCells);
+y=linspace(y1,y2,nCells);
 [X,Y]=meshgrid(x,y);
-function z=f(u,v)
-    z=-inf;
-    Z=max([u,-u,v,-v]);
-    if (Z<1/2)
-        z= 1;
-    end
-    if (1/2<Z && Z<3/2)
-        z=3/2-Z;
-    end
-end
-F=@f;
-% Z=arrayfun(F,X,Y);
-% Z=X.^2+Y.^2;
-Z=peaks(X,Y);
-numberOfLevels=100;
-C= contourc(x,y,Z,numberOfLevels);
-FG=figure('Name','Schwarz Rearrangement','NumberTitle','off');
-FG.Position= [350 150 900 450];
-tiledlayout(1,2);
-nexttile;
-S1=surf(X,Y,Z,'EdgeAlpha','.3');
-T=contourLines(C,gridCoordinates);
-T.updateAreas;
-function Sch = genSchwarz(x,y,T)
-    Sch = NaN;
-    z=pi*(x^2+y^2);
-    dom = T.squareDomain;
-    domainVolume = (dom(2)-dom(1))*(dom(4)-dom(3));
-    if  (z<domainVolume)
-        Sch=T.radDecrRearr(z);
-    end
-end
-Schwarz= @(x,y) genSchwarz(x,y,T);
-nexttile;
-dom = T.squareDomain;
-domainVolume = (dom(2)-dom(1))*(dom(4)-dom(3));
-radiusSharp = sqrt(domainVolume/pi);
-x=linspace(-radiusSharp, radiusSharp);
-y=linspace(-radiusSharp, radiusSharp);
-[X, Y]= meshgrid(x,y);
-Z=arrayfun(Schwarz,X,Y);
-squareVolume = (x2-x1)*(y2-y1);
-for z=Z
-    if (z<2)
 
-    end
-end
+% Preset the window to plot 3 surfaces
+FG=figure('Name','Schwarz Rearrangement','NumberTitle','off');
+FG.Position= [100 150 1350 450];
+tiledlayout(1,3);
+nexttile;
+
+% Plot F1
+Z=arrayfun(F1,X,Y);
+S1=surf(X,Y,Z,'EdgeAlpha','.3');
+nexttile;
+
+% Construct the object contourLines to reorder F1
+F1Lines=contourLines(F1,gridCoordinates,nCells,nLevels);
+
+
+% Construct the object contourLines to obtain the levels of F2
+F2Lines = contourLines(F2,gridCoordinates,nCells,nLevels);
+
+% Uncomment the following to compute a bigger grid containing the ball of same volume
+% as the initial grid  
+% dom = F1Lines.squareDomain;
+% domainVolume = (dom(2)-dom(1))*(dom(4)-dom(3));
+% radiusSharp = sqrt(domainVolume/pi);
+% x=linspace(-radiusSharp, radiusSharp,nCells);
+% y=linspace(-radiusSharp, radiusSharp,nCells);
+% [X, Y]= meshgrid(x,y);
+
+% Plot the rearrangement of F1 along F2
+G = @(x,y) F1Lines.Schwarz(x,y,F2Lines);
+Z=arrayfun(G,X,Y);
+squareVolume = (x2-x1)*(y2-y1);
 S2=surf(X,Y,Z,'EdgeAlpha','.3');
+nexttile;
+
+% Plot F2
+Z = arrayfun(F2,X,Y);
+S3=surf(X,Y,Z,'EdgeAlpha','.3');
