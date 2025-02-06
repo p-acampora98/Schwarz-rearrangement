@@ -20,6 +20,12 @@ x=linspace(x1,x2,nCells);
 y=linspace(y1,y2,nCells);
 [X,Y]=meshgrid(x,y);
 
+% Colors of the plot   
+colorMapLength = 100;
+green = [45, 210, 97]/255*1.1;
+purple = [111, 83, 171]/255*1.1;
+customColorMap = [linspace(purple(1),green(1),colorMapLength)', linspace(purple(2),green(2),colorMapLength)', linspace(purple(3),green(3),colorMapLength)']; 
+
 % Preset the window to plot 3 surfaces
 FG=figure('Name','Schwarz Rearrangement','NumberTitle','off');
 FG.Position= [100 150 1350 450];
@@ -29,6 +35,7 @@ nexttile;
 % Plot F1
 Z=arrayfun(F1,X,Y);
 S1=surf(X,Y,Z,'EdgeAlpha','.3');
+colormap(customColorMap);
 nexttile;
 
 % Construct the object contourLines to reorder F1

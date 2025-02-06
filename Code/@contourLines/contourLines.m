@@ -156,13 +156,16 @@ classdef contourLines < handle
                 end
         end
     
-        function mi = distributionFunction(obj,t)
+        function mi = distributionFunction(obj,s)
         % Compute for every level t the area of the level set closest to t (among the stored ones)
-            mi=0;
-            if t<obj.levels(obj.numberOfLevels)
-                lvls=obj.levels;
-                [~,closestLevelIndex] = binaryClosest(lvls, t);
-                mi = obj.areas(closestLevelIndex);
+            mi=zeros(size(s));
+            for ii=1:numel(s)
+                t=s(ii);
+                if t<obj.levels(obj.numberOfLevels)
+                    lvls=obj.levels;
+                    [~,closestLevelIndex] = binaryClosest(lvls, t);
+                    mi(ii) = obj.areas(closestLevelIndex);
+                end
             end
         end
 
@@ -210,9 +213,9 @@ classdef contourLines < handle
 
             Sch = NaN;
             if isempty(obj2)
-                z=pi*(x^2+y^2);
+                z=pi*(x.^2+y.^2);
             else
-                z=obj2.distributionFunction(obj2.funHandle(x,y));
+                z=obj2.distributionFunction(arrayfun(@obj2.funHandle,x,y));
             end
             dom = obj.squareDomain;
             domainVolume = (dom(2)-dom(1))*(dom(4)-dom(3));
