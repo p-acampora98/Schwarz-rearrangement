@@ -170,9 +170,7 @@ classdef contourLines < handle
         end
 
         function t = radDecrRearr (obj, Mi)
-            t = zeros(size(Mi));
             for ii=1:numel(Mi)
-            mi = Mi(ii);
             t(ii)=obj.levels(1);
             if mi<=obj.areas(1)
                 Areas=obj.areas;
