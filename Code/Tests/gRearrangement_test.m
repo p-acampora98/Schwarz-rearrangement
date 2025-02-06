@@ -6,8 +6,8 @@ nLevels = 100;
 nCells = 100;
 
 % Functions
-F1 = @peaks; % To be reordered
-F2 = @squareTest; % Giving the levels to reorder
+F1 = @peaks; % To be rearranged
+F2 = @squareTest; % Giving the levels to rearrange
 
 
 % General square domain 
@@ -38,7 +38,7 @@ S1=surf(X,Y,Z,'EdgeAlpha','.3');
 colormap(customColorMap);
 nexttile;
 
-% Construct the object contourLines to reorder F1
+% Construct the object contourLines to rearrange F1
 F1Lines=contourLines(F1,gridCoordinates,nCells,nLevels);
 
 
